@@ -36,6 +36,6 @@ impl Bang {
         ))
     }
     pub fn with_query(&self, q: &str) -> String {
-        self.uri.replace("{{{s}}}", q)
+        self.uri.replace("{{{s}}}", &urlencoding::encode(q))
     }
 }
