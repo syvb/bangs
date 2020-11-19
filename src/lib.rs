@@ -14,25 +14,15 @@ impl Bang {
         lazy_static! {
             static ref PARSE_REGEX: Regex = Regex::new(r#"(!([A-Za-z0-9]+($|\s)))"#).unwrap();
         }
-        let captures = PARSE_REGEX.captures(s)?;
-        let match1 = captures.get(1)?;
-        let match2 = captures.get(2)?;
+        let range = PARSE_REGEX.find(s)?.range();
+        if !s.is_char_boundary(range.start) || !s.is_char_boundary(range.start + 1) || !s.is_char_boundary(range.end) {
+            return None;
+        }
+        let mut search = String::from(s);
+        search.replace_range(range.clone(), "");
         Some((
-            bangs::lookup_bang(match2.as_str().trim())?,
-            {
-                let range = match1.range();
-                
-                if !s.is_char_boundary(range.start) || !s.is_char_boundary(range.end) {
-                    return None;
-                }
-                let prebang = s.split_at(range.start).0;
-                let postbang = s.split_at(range.end).1;
-                
-                let mut result = String::with_capacity(prebang.len());
-                result.push_str(prebang);
-                result.push_str(postbang);
-                result
-            }
+            bangs::lookup_bang(s[(range.start + 1)..range.end].trim())?,
+            search,
         ))
     }
     pub fn with_query(&self, q: &str) -> String {
