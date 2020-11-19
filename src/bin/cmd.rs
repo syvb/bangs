@@ -7,5 +7,9 @@ fn main() {
         stdin.lock().read_to_string(&mut buf).unwrap();
         buf
     };
-    dbg!(bangs::Bang::parse_search(&query));
+    if let Some((bang, search)) = bangs::Bang::parse_search(&query) {
+        println!("{}", bang.with_query(&search));
+    } else {
+        println!("NONE");
+    };
 }
