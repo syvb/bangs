@@ -12,7 +12,8 @@ pub struct Bang {
 impl Bang {
     pub fn parse_search(s: &str) -> Option<(Self, String)> {
         lazy_static! {
-            static ref PARSE_REGEX: Regex = Regex::new(r#"(!([A-Za-z0-9]+($|\s)))"#).unwrap();
+            // \s requires Unicode support
+            static ref PARSE_REGEX: Regex = Regex::new(r#"(!([A-Za-z0-9]+([ \t\r\n\f\u00A0]|$)))"#).unwrap();
         }
         let range = PARSE_REGEX.find(s)?.range();
         if !s.is_char_boundary(range.start) || !s.is_char_boundary(range.start + 1) || !s.is_char_boundary(range.end) {
