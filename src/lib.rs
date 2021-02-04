@@ -3,7 +3,7 @@ use lazy_static::lazy_static;
 
 mod bangs;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct Bang {
     pub name: &'static str,
     pub uri: &'static str,
@@ -30,4 +30,29 @@ impl Bang {
     pub fn with_query(&self, q: &str) -> String {
         self.uri.replace("{{{s}}}", &urlencoding::encode(q))
     }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    macro_rules! nomatch_tests {
+        ($($name:ident => [$($search:literal),+]),+,) => {
+            $(
+                #[test]
+                fn $name() {
+                    $(
+                        assert_eq!(Bang::parse_search($search), None);
+                    )+
+                }
+            )+
+        };
+    }
+
+    nomatch_tests! [
+        no_expoint => ["hlduwp", "yltdw dbuwy", "dnyw.dwfd"],
+        ex_end => ["hi!", "a b!", "tdw hni ! ", "g!", "g! "],
+        space_gap => ["dfwp ! g", "dly ! hlduyfp", "! g", "g !", "b! g", "b ! g"],
+        whitespace_gap => ["!\tg", "!\rg"],
+    ];
 }
