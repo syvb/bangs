@@ -6,7 +6,7 @@ mod bangs;
 #[derive(Debug, Copy, Clone)]
 pub struct Bang {
     pub name: &'static str,
-    uri: &'static str,
+    pub uri: &'static str,
 }
 
 impl Bang {
